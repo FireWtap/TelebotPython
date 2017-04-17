@@ -1,2 +1,2 @@
 if text == "/start":
-	sm(cid, "Test")
+	sendMessage(cid, "Test")
