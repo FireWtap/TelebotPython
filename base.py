@@ -29,20 +29,13 @@ def sendVideo(chatid, video, caption):
     url = "https://api.telegram.org/bot"+str(token)+"/sendVideo?chat_id"+str(chatid)+"&caption="+str(caption)
     requests.post(url, files={'video':video}).text
 
-def Keyboard(chatid, keyboard, msg):
+def Keyboard(chatid, keyboard, msg): #broken for now >((
     requests.post(telegram+"sendMessage", data={'chat_id':chatid, 'text':msg, 'reply_markup':keyboard}).text
 
 def setToken(t):
     global token
     token = t
 
-def RemoveKeyboard(chatid, remove, msg):
-    remove = {
-        'chat_id':chatid,
-        'remove_keyboard':"true", 
-        'selective':"false",
-        'text':msg
-    }
 rip = []
 def killup():
     rip.append(update_id)
