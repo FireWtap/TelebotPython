@@ -1,4 +1,4 @@
-#Simple Base for Telegram BOT writed in python
+#Simple Base for Telegram BOT wrote in python
 #Dev Francesco666, Neon(Thanks you so much for help)
 
 import requests,json
