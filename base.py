@@ -36,8 +36,6 @@ def forward(chatid, fchatid, msgid):
     return apirequest('forwardMessage', {'chat_id': chatid, 'from_chat_id': fchatid, 'message_id': msgid})
 
 def sendVideo(chatid, video, caption = None):
-    #url = "https://api.telegram.org/bot"+str(token)+"/sendVideo?chat_id"+str(chatid)+"&caption="+str(caption)
-    #requests.post(url, files={'video':video}).text
     with open(video, 'r') as vidfile:
         if caption:
             return apirequest('sendVideo', {'video': vidfile.read(), 'chat_id': str(chatid), 'caption': unicode(caption)})
@@ -69,13 +67,11 @@ while True:
             cid = uid    
         else:
             cid = message["chat"]["id"]
-        if update_id in rip:
-            continue
-        else:
-                with open('cmd.py') as f: 
-                    s = f.read() 
-                    exec(s)
-                killup(update_id)
+        if update_id not in rip:
+            with open('cmd.py') as f: 
+                s = f.read() 
+                exec(s)
+            killup(update_id)
 
     except Exception as ex:
         print "ERROR: " + str(ex)
