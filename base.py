@@ -42,13 +42,15 @@ def sendVideo(chatid, video, caption = None):
         else:
             return apirequest('sendVideo', {'video': vidfile.read(), 'chat_id': str(chatid)})
 '''
-def Keyboard(chatid, keyboard, msg): #broken for now >((
+----BROKEN----
+def Keyboard(chatid, keyboard, msg):
     requests.post(telegram+"sendMessage", data={'chat_id':chatid, 'text':msg, 'reply_markup':keyboard}).text
 '''
 
-rip = []
-def killup(updid):
-    rip.append(updid)
+deadupdates = []
+def killupdate(updid):
+    global rip
+    deadupdates.append(updid)
 
 while True:
     try:
@@ -67,11 +69,10 @@ while True:
             cid = uid    
         else:
             cid = message["chat"]["id"]
-        if update_id not in rip:
+        if deadupdates not in rip:
             with open('cmd.py') as f: 
-                s = f.read() 
-                exec(s)
-            killup(update_id)
+                exec(f.read())
+            killupdate(update_id)
 
     except Exception as ex:
         print "ERROR: " + str(ex)
