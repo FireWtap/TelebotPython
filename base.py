@@ -1,51 +1,60 @@
+#!/usr/bin/env python2
 #Simple Base for Telegram BOT wrote in python
-#Dev Francesco666, Neon(Thanks you so much for help)
+#Dev Francesco666, Neon(Thank you so much for help)
+'''
+TODO:
+-Fix inline keyboard
+'''
+import requests
+import json
 
-import requests,json
+token = "INSERT TOKEN HERE"
+apiurl = "https://api.telegram.org/bot" + token + "/"
 
-token = "INSER TOKEN HERE"
-telegram = "https://api.telegram.org/bot"+token+"/"
+def apirequest(method, data = None):
+    global apiurl
+    return json.loads(requests.get(apiurl + method, data).text)    
 
-def apireq(method):
-    ok = requests.get(telegram+method).text
-    return ok
-    #Function!
 def sendMessage(chatid, msg):
-    jej = requests.post(telegram+"sendMessage", data={'chat_id':chatid, 'text':msg})
-    return jej.text
+    return apirequest('sendMessage', {'chat_id': str(chatid), 'text': unicode(msg)})
 
-def sendPhoto(chatid, photo, caption):
-    url = "https://api.telegram.org/bot"+str(token)+"/sendPhoto?chat_id="+str(chatid)+"&caption="+str(caption)
-    requests.post(url, files={'foto':photo}).text
+def sendPhoto(chatid, photo, caption = None):
+    with open(photo, 'r') as photofile:
+        if caption:
+            return apirequest('sendPhoto', {'photo': photofile.read(), 'chat_id': str(chatid), 'caption': unicode(caption)})
+        else:
+            return apirequest('sendPhoto', {'photo': photofile.read(), 'chat_id': str(chatid)})
     
-def sendDocument(chatid, document, caption):
-    url = "https://api.telegram.org/bot"+str(token)+"/sendDocument?chat_id="+str(chatid)+"&caption="+str(caption)
-    requests.post(url, files={'document': open(document, 'rb')}).text
+def sendDocument(chatid, document, caption = None):
+    with open(document, 'r') as docfile:
+        if caption:
+            return apirequest('sendDocument', {'document': docfile.read(), 'chat_id': str(chatid), 'caption': unicode(caption)})
+        else:
+            return apirequest('sendDocument', {'document': docfile.read(), 'chat_id': str(chatid)})
     
 def forward(chatid, fchatid, msgid):
-    requests.post(telegram+"forwardMessage", data={'chat_id':chatid, 'from_chat_id':fchatid, 'message_id':msgid})
+    return apirequest('forwardMessage', {'chat_id': chatid, 'from_chat_id': fchatid, 'message_id': msgid})
 
-def sendVideo(chatid, video, caption):
-    url = "https://api.telegram.org/bot"+str(token)+"/sendVideo?chat_id"+str(chatid)+"&caption="+str(caption)
-    requests.post(url, files={'video':video}).text
-
-def Keyboard(chatid, keyboard, msg): #broken for now >((
+def sendVideo(chatid, video, caption = None):
+    with open(video, 'r') as vidfile:
+        if caption:
+            return apirequest('sendVideo', {'video': vidfile.read(), 'chat_id': str(chatid), 'caption': unicode(caption)})
+        else:
+            return apirequest('sendVideo', {'video': vidfile.read(), 'chat_id': str(chatid)})
+'''
+----BROKEN----
+def Keyboard(chatid, keyboard, msg):
     requests.post(telegram+"sendMessage", data={'chat_id':chatid, 'text':msg, 'reply_markup':keyboard}).text
+'''
 
-def setToken(t):
-    global token
-    token = t
-
-rip = []
-def killup():
-    rip.append(update_id)
+deadupdates = []
+def killupdate(updid):
+    global rip
+    deadupdates.append(updid)
 
 while True:
     try:
-        up = requests.get("https://api.telegram.org/bot"+token+"/getupdates?offset=-1").text
-        data = json.loads(up)
-        #print up 
-        #tg var
+        data = apirequest('getUpdates', {'offset': '-1'})
         update = data["result"][0]
         message = update["message"]
         update_id = update["update_id"]
@@ -60,18 +69,13 @@ while True:
             cid = uid    
         else:
             cid = message["chat"]["id"]
+        if deadupdates not in rip:
+            with open('cmd.py') as f: 
+                exec(f.read())
+            killupdate(update_id)
 
-        
-        if update_id in rip:
-            continue;
-        else:
-                with open('cmd.py') as f: 
-                    s = f.read() 
-                    exec(s)
-                killup()
-
-    except:
-        print "ERROR!"
+    except Exception as ex:
+        print "ERROR: " + str(ex)
         continue
     
 
